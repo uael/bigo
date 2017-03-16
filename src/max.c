@@ -34,12 +34,12 @@ uint8_t max_e(void);
 uint8_t main(uint8_t argc, char *argv[]) {
   uint8_t *values;
   double k, limit;
-  static struct { const char *id; uint8_t reset, (*f)(void); double time; } impls[5] = {
-    {"a", 0, max_a, 0.0},
-    {"b", 1, max_b, 0.0},
-    {"c", 1, max_c, 0.0},
-    {"d", 0, max_d, 0.0},
-    {"e", 0, max_e, 0.0}
+  static struct { const char *id; uint8_t (*f)(void); double time; } impls[5] = {
+    {"a", max_a, 0.0},
+    {"b", max_b, 0.0},
+    {"c", max_c, 0.0},
+    {"d", max_d, 0.0},
+    {"e", max_e, 0.0}
   };
 
   assert(argc == 4);
