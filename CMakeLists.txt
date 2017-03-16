@@ -6,3 +6,4 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/bin)
 set(SOURCE_FILES src/max.c)
 
 add_executable(bigo ${SOURCE_FILES})
+add_executable(tp2 src/tp2.c)
