@@ -5,15 +5,16 @@
 #include <time.h>
 #include <assert.h>
 
-#define MAX 0x2540BE400
+#define MAX 1000000
 
 double benchmark(const char *n, uint8_t (*f)(void)) {
   clock_t t = clock();
   double result;
+  uint8_t max;
 
-  (*f)();
+  max = (*f)();
   result = (double) (clock() - t) / CLOCKS_PER_SEC;
-  printf("%s;%.9lf\n", n, result);
+  printf("%d;%s;%.9lf\n", max, n, result);
   return result;
 }
 
@@ -52,16 +53,14 @@ uint8_t main(uint8_t argc, char *argv[]) {
   data = malloc(MAX * sizeof(uint8_t));
 
   for (size_t i = 0; i < MAX; ++i) {
-    values[i] = (uint8_t) (((UINT8_MAX/3) + 1) * ((double) rand() / RAND_MAX));
+    values[i] = (uint8_t) ((UINT8_MAX + 1) * ((double) rand() / RAND_MAX));
   }
 
   do for (uint8_t x = 0; x < 5; ++x) {
     if (impls[x].time < limit) {
       printf("%lu;", size);
+      memcpy(data, values, size * sizeof(uint8_t));
       impls[x].time = benchmark(impls[x].id, impls[x].f);
-      if (impls[x].reset) {
-        memcpy(data, values, size * sizeof(uint8_t));
-      }
     }
   } while (
     (size *= k) < MAX && (
@@ -151,23 +150,15 @@ uint8_t max_c(void) {
 }
 
 uint8_t max_d(void) {
-  uint8_t max_r(uint8_t *l, uint8_t *r, size_t s) {
-    uint8_t last;
-
-    if (s > 1) {
-      if ((s % 2) != 0) {
-        last = data[s];
-        s = (s - 1) / 2;
-        return max(last, max(max_r(l, l + s, s), max_r(r, r + s, s)));
-      }
-      s /= 2;
-      return max(max_r(l, l + s, s), max_r(r, r + s, s));
+  uint8_t max_r(uint8_t *l, size_t s) {
+    if (s == 1) {
+      return l[0];
     }
-    return max(l[0], r[0]);
+
+    return max(max_r(l, s/2), max_r(l+(s/2), (s-(s/2))));
   }
 
-  size_t s = size / 2;
-  return max_r(data, data + s, s);
+  return max_r(data, size);
 }
 
 uint8_t max_e(void) {
