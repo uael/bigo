@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 
 /* fonction utilisateur de comparaison fournie a qsort() */
 static int compare(void const *a, void const *b) {
@@ -39,27 +40,26 @@ int card(int *tab, int n, int element) {
       result++;
     } else if (result)break;
   }
-  return result;
+  return result>n/2;
 }
 
-int card2(int *tab, int n, int element){
+bool elementMaj(int *tab, int n) {
+  int prev = 0, count = 0;
+  for (int i = 0; i<n; ++i) {
+    if (prev != tab[i]) {
+      count = 0;
+    }
+    if (++count > n/2) return true;
+    prev = tab[i];
+  }
+  return false;
+}
+
+bool elementMaj2(int *tab, int n) {
   int *tab2=malloc(sizeof(int)*tab[n-1]);
   memset(tab2, 0, (size_t) tab[n-1]); // set all values to 0
   for (int i = 0; i < n; i++) {
-    tab2[tab[i]]++;
+    if(++tab2[tab[i]] > n/2) return true;
   }
-
-  if (element <= tab[n - 1]) {
-    return tab2[element];
-  } else {
-    return 0;
-  }
-}
-
-int card3(int *tab, int n, int element){
-  if(n==1){
-    if (tab[0]==element)return 1;
-    return 0;
-  }
-  return card3(tab, n/2, element) + card3(tab + (n/2), n - (n/2), element);
+  return false;
 }
